@@ -1,138 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anime Details - JKM</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: white;
-        color: black;
-        line-height: 1.6;
-    }
-    .container {
-        max-width: 900px;
-        margin: auto;
-        padding: 20px;
-    }
-    img {
-        max-width: 300px;
-        border-radius: 5px;
-        display: block;
-        margin-bottom: 20px;
-    }
-    h1 {
-        margin-top: 0;
-    }
-    .genres {
-        font-style: italic;
-        color: gray;
-        margin-bottom: 20px;
-    }
-    .meta {
-        margin: 10px 0;
-        font-weight: bold;
-    }
-    iframe {
-        width: 100%;
-        height: 400px;
-        margin-top: 20px;
-        border: none;
-    }
-    .nav-buttons {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 30px;
-    }
-    .nav-buttons a {
-        padding: 10px 20px;
-        background-color: black;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-    }
-    .nav-buttons a:hover {
-        background-color: gray;
-    }
-    .fade {
-        opacity: 0;
-        transition: opacity 0.5s ease;
-    }
-    .fade.show {
-        opacity: 1;
-    }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anime Details</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container fade" id="fadeContainer">
-    <a href="index.html">⬅ Back to Home</a>
-    <div id="animeDetails">Loading anime details...</div>
-    <div class="nav-buttons" id="navButtons" style="display:none;">
-        <a id="prevBtn" href="#">⬅ Previous</a>
-        <a id="nextBtn" href="#">Next ➡</a>
-    </div>
-</div>
+  <div id="anime-details" style="padding: 20px; max-width: 800px; margin: auto;"></div>
 
-<script>
+  <script>
     const params = new URLSearchParams(window.location.search);
-    const animeId = parseInt(params.get('id'), 10);
+    const animeId = params.get("id");
 
-    let animeList = JSON.parse(localStorage.getItem('animeList')) || [];
-    let currentIndex = animeList.findIndex(a => a.id === animeId);
-
-    async function fetchAnimeDetails() {
-        try {
-            const response = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
-            const data = await response.json();
-            const anime = data.data;
-
-            document.getElementById('animeDetails').innerHTML = `
-                <h1>${anime.title}</h1>
-                <img src="${anime.images.jpg.large_image_url}" alt="${anime.title}">
-                <div class="genres">Genres: ${anime.genres.map(g => g.name).join(', ')}</div>
-                <div class="meta">Rating: ${anime.score || 'N/A'} / 10</div>
-                <div class="meta">Release Date: ${anime.aired.from ? anime.aired.from.split('T')[0] : 'N/A'}</div>
-                <p>${anime.synopsis || 'No synopsis available.'}</p>
-                ${anime.trailer?.embed_url ? `<iframe src="${anime.trailer.embed_url}" allowfullscreen></iframe>` : ''}
-            `;
-
-            if (animeList.length > 0) {
-                document.getElementById('navButtons').style.display = 'flex';
-            }
-
-            // Show fade-in after loading
-            setTimeout(() => document.getElementById('fadeContainer').classList.add('show'), 50);
-
-        } catch (error) {
-            document.getElementById('animeDetails').innerHTML = `<p>Failed to load anime details.</p>`;
-        }
-    }
-
-    function navigateTo(index) {
-        document.getElementById('fadeContainer').classList.remove('show');
-        setTimeout(() => {
-            window.location.href = `details.html?id=${animeList[index].id}`;
-        }, 500); // matches fade-out duration
-    }
-
-    document.getElementById('prevBtn').addEventListener('click', function(e) {
-        e.preventDefault();
-        let prevIndex = (currentIndex - 1 + animeList.length) % animeList.length;
-        navigateTo(prevIndex);
-    });
-
-    document.getElementById('nextBtn').addEventListener('click', function(e) {
-        e.preventDefault();
-        let nextIndex = (currentIndex + 1) % animeList.length;
-        navigateTo(nextIndex);
-    });
-
-    fetchAnimeDetails();
-</script>
+    fetch(`https://api.jikan.moe/v4/anime/${animeId}`)
+      .then(res => res.json())
+      .then(data => {
+        const anime = data.data;
+        document.getElementById("anime-details").innerHTML = `
+          <h1>${anime.title}</h1>
+          <img src="${anime.images.jpg.large_image_url}" alt="${anime.title}" style="max-width:300px; display:block; margin-bottom:20px;">
+          <p><strong>Episodes:</strong> ${anime.episodes}</p>
+          <p><strong>Score:</strong> ${anime.score}</p>
+          <p><strong>Synopsis:</strong> ${anime.synopsis}</p>
+          <a href="${anime.trailer.url}" target="_blank">🎥 Watch Trailer</a>
+        `;
+      })
+      .catch(err => {
+        document.getElementById("anime-details").innerHTML = "<p>Error loading details.</p>";
+        console.error(err);
+      });
+  </script>
 </body>
 </html>
