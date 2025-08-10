@@ -1,21 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Anime List</title>
-  <style>
-    body { font-family: Arial; background: #222; color: #fff; text-align: center; }
-    .anime-card { display: inline-block; margin: 10px; padding: 10px; background: #333; border-radius: 8px; width: 200px; }
-    img { width: 100%; border-radius: 8px; }
-  </style>
-</head>
-<body>
-  <h1>Anime List</h1>
-  <div id="anime-container"></div>
+// Fetch top anime from the Jikan API
+fetch("https://api.jikan.moe/v4/top/anime")
+  .then(response => response.json())
+  .then(data => {
+    const animeList = data.data; // Array of anime objects
+    const container = document.getElementById("anime-container");
 
-  <script src="script.js"></script>
-</body>
-</html>
-<div id="anime-container"></div>
+    animeList.forEach(anime => {
+      // Create anime card
+      const card = document.createElement("div");
+      card.classList.add("anime-card");
 
+      // Add image
+      const img = document.createElement("img");
+      img.src = anime.images.jpg.image_url;
+      img.alt = anime.title;
 
+      // Add title
+      const title = document.createElement("h3");
+      title.textContent = anime.title;
+
+      // Append to card
+      card.appendChild(img);
+      card.appendChild(title);
+
+      // Append card to container
+      container.appendChild(card);
+    });
+  })
+  .catch(error => console.error("Error fetching anime:", error));
