@@ -1,29 +1,22 @@
-// Fetch top anime from the Jikan API
 fetch("https://api.jikan.moe/v4/top/anime")
   .then(response => response.json())
   .then(data => {
-    const animeList = data.data; // Array of anime objects
+    const animeList = data.data;
     const container = document.getElementById("anime-container");
 
     animeList.forEach(anime => {
-      // Create anime card
       const card = document.createElement("div");
       card.classList.add("anime-card");
 
-      // Add image
       const img = document.createElement("img");
       img.src = anime.images.jpg.image_url;
       img.alt = anime.title;
 
-      // Add title
       const title = document.createElement("h3");
       title.textContent = anime.title;
 
-      // Append to card
       card.appendChild(img);
       card.appendChild(title);
-
-      // Append card to container
       container.appendChild(card);
     });
   })
