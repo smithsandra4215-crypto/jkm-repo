@@ -31,3 +31,15 @@ fetch("https://api.jikan.moe/v4/top/anime")
   })
   .catch(error => console.error("Error fetching anime:", error));
 <script src="script.js"></script>
+const animeList = document.getElementById("animeList");
+const animeData = [
+    { title: "Naruto", image: "https://via.placeholder.com/150" },
+    { title: "One Piece", image: "https://via.placeholder.com/150" }
+];
+
+animeData.forEach(anime => {
+    const div = document.createElement("div");
+    div.innerHTML = `<h3>${anime.title}</h3><img src="${anime.image}" alt="${anime.title}">`;
+    animeList.appendChild(div);
+});
+
