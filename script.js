@@ -1,19 +1,33 @@
-const container = document.getElementById('anime-container');
+// script.js
 
-fetch('https://api.jikan.moe/v4/top/anime')
+// Fetch top anime from the Jikan API
+fetch("https://api.jikan.moe/v4/top/anime")
   .then(response => response.json())
   .then(data => {
-    data.data.forEach(anime => {
-      const card = document.createElement('div');
-      card.classList.add('anime-card');
+    const animeList = data.data; // Array of anime objects
+    const container = document.getElementById("anime-container");
 
-      card.innerHTML = `
-        <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
-        <h3>${anime.title}</h3>
-        <p>Score: ${anime.score || 'N/A'}</p>
-      `;
+    animeList.forEach(anime => {
+      // Create anime card
+      const card = document.createElement("div");
+      card.classList.add("anime-card");
 
+      // Add image
+      const img = document.createElement("img");
+      img.src = anime.images.jpg.image_url;
+      img.alt = anime.title;
+
+      // Add title
+      const title = document.createElement("h3");
+      title.textContent = anime.title;
+
+      // Append to card
+      card.appendChild(img);
+      card.appendChild(title);
+
+      // Append card to container
       container.appendChild(card);
     });
   })
-  .catch(error => console.error('Error fetching anime:', error));
+  .catch(error => console.error("Error fetching anime:", error));
+<script src="script.js"></script>
